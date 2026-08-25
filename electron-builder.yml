@@ -1,0 +1,49 @@
+appId: dev.popingui.app
+productName: popingui
+copyright: popingui
+
+directories:
+  output: release
+  buildResources: build
+
+# Everything the app runs is already bundled into build/main.cjs, so the
+# installer carries three things: that bundle, the built UI and the icons.
+files:
+  - build/main.cjs
+  - build/main.cjs.map
+  - package.json
+
+extraResources:
+  - from: dist
+    to: dist
+  - from: build/icons
+    to: icons
+
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+    - target: portable
+      arch: [x64]
+  icon: build/icons/app.ico
+  artifactName: ${productName}-${version}-${arch}.${ext}
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: popingui
+
+portable:
+  artifactName: ${productName}-${version}-portable.${ext}
+  # Unpack into a per-launch temp directory instead of one shared by every
+  # launch of this build. The portable stub starts with `RMDir /r $INSTDIR`,
+  # so with a shared directory a second launch wipes the files the already
+  # running tray instance is executing from — it dies looking for ffmpeg.dll.
+  #
+  # `true` is genuinely what turns the shared directory off: app-builder-lib
+  # only skips defining UNPACK_DIR_NAME for a truthy non-string value, and
+  # passing `false` still gets a fixed name (electron-builder#5764).
+  unpackDirName: true

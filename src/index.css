@@ -1,0 +1,44 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-ink-950: #0a0c10;
+  --color-ink-900: #101318;
+  --color-ink-800: #171b22;
+  --color-ink-700: #21262f;
+  --color-ink-600: #2d343f;
+  /*
+   * Text colour for labels and secondary copy. The ink-* ramp is for surfaces
+   * and borders: ink-600 as text sits at roughly 1.5:1 on the panel background
+   * and is unreadable. This clears 7:1.
+   */
+  --color-muted: #97a2b4;
+  --color-good: #34d399;
+  --color-warn: #fbbf24;
+  --color-bad: #f87171;
+  --font-mono: ui-monospace, 'JetBrains Mono', 'Cascadia Code', Consolas, monospace;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  background: var(--color-ink-950);
+  color: #e6e9ef;
+  font-family: ui-sans-serif, 'Inter', 'Segoe UI', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-ink-700);
+  border-radius: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
