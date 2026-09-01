@@ -20,7 +20,7 @@
     "build:main": "node scripts/build-main.mjs",
     "app": "npm run icons && npm run build:main && concurrently -k -n ui,app -c magenta,green \"npm:dev:ui\" \"npm:app:electron\"",
     "app:electron": "electron .",
-    "app:build": "npm run icons && npm run build && cross-env NODE_ENV=production npm run build:main && electron-builder --win",
+    "app:build": "npm run icons && npm run build && cross-env NODE_ENV=production npm run build:main && electron-builder --win --publish never",
     "release:checksums": "node scripts/checksums.mjs",
     "typecheck": "tsc --noEmit"
   },
