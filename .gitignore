@@ -9,5 +9,13 @@ data/
 build/
 release/
 
+# локальные пакеты релиза, создаваемые scripts/package-release.mjs
+artifacts/
+
+# экспортированные пакеты прошлых релизов в корне рабочей папки
+/*.exe
+/*.zip
+/*.bundle
+
 # локальные разрешения инструментов — машинно-зависимые пути и id сессий
 .claude/settings.local.json

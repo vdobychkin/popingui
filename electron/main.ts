@@ -9,6 +9,7 @@ import { buildTrayMenu, trayTooltip, type TrayActions } from './tray-menu.ts';
 
 const DEV = !app.isPackaged;
 const SMOKE = process.env.POPINGUI_SMOKE === '1' || process.argv.includes('--smoke');
+const SCREENSHOT_PATH = process.env.POPINGUI_SCREENSHOT;
 const VITE_URL = 'http://127.0.0.1:5273';
 
 // esbuild emits CommonJS to build/main.cjs, so __dirname is the build folder
@@ -81,6 +82,18 @@ async function main(): Promise<void> {
   });
 
   if (SMOKE) runSmokeTest();
+  if (SCREENSHOT_PATH) runScreenshot(SCREENSHOT_PATH);
+}
+
+/** Captures the real packaged UI for release documentation. */
+function runScreenshot(output: string): void {
+  setTimeout(() => {
+    void win?.webContents.capturePage().then((image) => {
+      writeFileSync(output, image.toPNG());
+      quitting = true;
+      void monitor.stop().finally(() => app.exit(0));
+    });
+  }, 8000);
 }
 
 /**

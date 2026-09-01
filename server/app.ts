@@ -76,7 +76,14 @@ export class Monitor extends EventEmitter {
       sweepOnStart: options.sweepOnStart ?? true,
     };
     this.server = http.createServer(this.app);
-    this.wss = new WebSocketServer({ server: this.server, path: '/ws' });
+    this.wss = new WebSocketServer({
+      server: this.server,
+      path: '/ws',
+      // Browsers send Origin on WebSocket handshakes. Without this check any
+      // website opened on the machine could read local targets and proxy
+      // settings from 127.0.0.1. Origin-less native clients remain supported.
+      verifyClient: ({ origin }, done) => done(!origin || this.allowedOrigin(origin), origin ? 403 : undefined),
+    });
     this.buildRoutes();
     this.buildSockets();
   }
@@ -110,6 +117,17 @@ export class Monitor extends EventEmitter {
 
   get url(): string {
     return `http://127.0.0.1:${this.port}`;
+  }
+
+  private allowedOrigin(origin: string): boolean {
+    try {
+      const url = new URL(origin);
+      if (url.protocol !== 'http:') return false;
+      if (url.hostname !== '127.0.0.1' && url.hostname !== 'localhost') return false;
+      return url.port === String(this.port) || url.port === '5273';
+    } catch {
+      return false;
+    }
   }
 
   // ------------------------------------------------------------ public API
@@ -592,4 +610,3 @@ export function toCsv(states: TargetState[]): string {
   });
   return [head, ...rows].join('\r\n');
 }
-

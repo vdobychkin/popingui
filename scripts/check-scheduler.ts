@@ -18,8 +18,7 @@ import { Monitor } from '../server/app.ts';
 import { listStates, setSettings } from '../server/store.ts';
 import { ALL_LAYERS } from '../shared/types.ts';
 
-const FAST_PORT = 8000;
-const SLOW_PORT = 8080;
+const HTTP_PORT_CANDIDATES = [8000, 8008, 8080, 8081, 8888, 9000];
 const SLOW_MS = 1500;
 const RUN_MS = 9000;
 
@@ -29,8 +28,21 @@ const check = (name: string, ok: boolean, detail = '') => {
   console.log(`  ${ok ? '✔' : '✖'} ${name}${detail ? ` — ${detail}` : ''}`);
 };
 
-const listen = (s: http.Server, port: number) =>
-  new Promise<void>((r) => s.listen(port, '127.0.0.1', () => r()));
+async function listenOnAny(s: http.Server, excluded: number[] = []): Promise<number> {
+  for (const port of HTTP_PORT_CANDIDATES) {
+    if (excluded.includes(port)) continue;
+    const listening = await new Promise<boolean>((resolve) => {
+      const onError = () => resolve(false);
+      s.once('error', onError);
+      s.listen(port, '127.0.0.1', () => {
+        s.off('error', onError);
+        resolve(true);
+      });
+    });
+    if (listening) return port;
+  }
+  throw new Error(`нет свободного HTTP-порта среди ${HTTP_PORT_CANDIDATES.join(', ')}`);
+}
 
 /**
  * Both servers count how many requests they are serving at once.
@@ -54,8 +66,8 @@ const serve = (who: 'fast' | 'slow', delay: number) =>
 
 const fast = serve('fast', 0);
 const slow = serve('slow', SLOW_MS);
-await listen(fast, FAST_PORT);
-await listen(slow, SLOW_PORT);
+const FAST_PORT = await listenOnAny(fast);
+const SLOW_PORT = await listenOnAny(slow, [FAST_PORT]);
 
 const dataDir = mkdtempSync(path.join(tmpdir(), 'popingui-sched-'));
 // Write the target list before starting: an empty data directory is seeded
