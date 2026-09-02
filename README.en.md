@@ -102,6 +102,12 @@ UI/server/tray contract. See [architecture](.ai/architecture.md).
 - system PAC scripts are intentionally not executed;
 - unsigned builds may trigger SmartScreen.
 
+## License
+
+This project is distributed under the [MIT License](LICENSE). Use, modification, and
+distribution—including commercial use—are permitted as long as the copyright notice
+and license text are retained. The software is provided without warranty.
+
 ## Releases
 
 A `v*` tag runs the Windows workflow: clean install, typecheck, all checks,

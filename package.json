@@ -6,6 +6,7 @@
   "main": "build/main.cjs",
   "description": "Массовая проверка доступности с диагностикой способа блокировки (DNS / PING / TCP / TLS-SNI / HTTP / UDP)",
   "author": "popingui",
+  "license": "MIT",
   "engines": {
     "node": ">=22.12"
   },
